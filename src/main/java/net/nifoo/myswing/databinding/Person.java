@@ -4,8 +4,7 @@ import java.util.Date;
 
 import org.jdesktop.beans.AbstractBean;
 
-public class Person extends AbstractBean{
-
+public class Person extends AbstractBean {
 
 	private String name;
 	private Date birthday;
@@ -28,7 +27,7 @@ public class Person extends AbstractBean{
 	public void setName(String name) {
 		String oldName = this.name;
 		this.name = name;
-        firePropertyChange("name", oldName, name);
+		firePropertyChange("name", oldName, name);
 	}
 
 	public Date getBirthday() {

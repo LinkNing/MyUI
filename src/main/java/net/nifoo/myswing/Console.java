@@ -13,7 +13,7 @@ public class Console {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//frame.setBounds(100, 100, 450, 300);
 		frame.setSize(width, height);
-		frame.pack();
+		//frame.pack();
 		frame.setVisible(true);
 	}
 
@@ -28,7 +28,7 @@ public class Console {
 		applet.init();
 		applet.start();
 
-		frame.pack();
+		//frame.pack();
 		frame.setVisible(true);
 	}
 
@@ -40,7 +40,7 @@ public class Console {
 		//frame.setBounds(100, 100, 450, 300);
 		frame.setSize(width, height);
 
-		frame.pack();
+		//frame.pack();
 		frame.setVisible(true);
 	}
 

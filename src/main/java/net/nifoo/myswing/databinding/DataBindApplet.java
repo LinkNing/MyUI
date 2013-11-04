@@ -3,7 +3,6 @@ package net.nifoo.myswing.databinding;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -11,6 +10,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Date;
 
 import javax.swing.JApplet;
@@ -19,11 +20,9 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JList;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -32,10 +31,12 @@ import javax.swing.border.EtchedBorder;
 
 import net.nifoo.myswing.Console;
 
-import org.jdesktop.beansbinding.AutoBinding;
 import org.jdesktop.beansbinding.AutoBinding.UpdateStrategy;
 import org.jdesktop.beansbinding.BeanProperty;
+import org.jdesktop.beansbinding.Binding;
+import org.jdesktop.beansbinding.BindingGroup;
 import org.jdesktop.beansbinding.Bindings;
+import org.jdesktop.beansbinding.Converter;
 
 public class DataBindApplet extends JApplet {
 	public DataBindApplet() {
@@ -45,7 +46,7 @@ public class DataBindApplet extends JApplet {
 
 	private static final String APPLICATION_NAME = "XX系统";
 
-	Person thisPerson = new Person("张三", new Date(), "110", "xx@xx.com", "xxxx");
+	Person person = new Person("张三", new Date(), "110", "xx@xx.com", "xxxx");
 
 	JMenu[] menu;
 	Container mainPane;
@@ -63,6 +64,7 @@ public class DataBindApplet extends JApplet {
 	private JTextField txtPhone;
 	private JTextField txtEmail;
 	private JTextArea txtAddress;
+	private JSpinner spnAge;
 
 	@Override
 	public void init() {
@@ -76,36 +78,14 @@ public class DataBindApplet extends JApplet {
 		setName(APPLICATION_NAME);
 
 		mainPane = this.getContentPane();
-		//mainPane.setLayout(new FlowLayout());
-
-		// Menu
-		createMenu(mainPane);
 
 		// Toolbar
 		createToolBar(mainPane);
 
-		// navigate pane
-		createNavigatePane(mainPane);
-
 		// Content
 		createContentPane(mainPane);
 
-		// state pane
-		createStatePane(mainPane);
-
 		initDataBindings();
-	}
-
-	private void createMenu(Container mainPane) {
-		menu = new JMenu[] { new JMenu("File"), new JMenu("Edit"), new JMenu("View") };
-		JMenuBar menuBar = new JMenuBar();
-		setJMenuBar(menuBar);
-		for (JMenu m : menu) {
-			menuBar.add(m);
-		}
-
-		menu[0].add(new JMenuItem("New"));
-		menu[0].add(new JMenuItem("Exit"));
 	}
 
 	private void createToolBar(Container mainPane) {
@@ -121,28 +101,14 @@ public class DataBindApplet extends JApplet {
 		btnShow.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				//JOptionPane.showMessageDialog(null, "someone click the button[show].\n");
-				JOptionPane.showMessageDialog(null, thisPerson.getName());
+				// JOptionPane.showMessageDialog(null, "someone click the button[show].\n");
+				// JOptionPane.showMessageDialog(null, person.getName());
+				txtAddress.append(person.getName());
+				txtAddress.append("\n");
+
+				System.out.println(spnAge.getValue());
 			}
 		});
-	}
-
-	private void createNavigatePane(Container mainPane) {
-		navPane = new JPanel();
-		mainPane.add(navPane, BorderLayout.WEST);
-		navPane.setSize(new Dimension(100, 300));
-		navPane.setBorder(new EtchedBorder());
-		// navPane.setLayout(new BoxLayout(navPane, BoxLayout.Y_AXIS));
-		navPane.setLayout(new BorderLayout());
-
-		JLabel navTitle = new JLabel();
-		navTitle.setText("请选择: ");
-		navPane.add(navTitle, BorderLayout.NORTH);
-
-		navList = new JList(new Integer[] { 1, 2, 3, 4, 5 });
-		navList.setVisibleRowCount(10);
-		navList.setSize(100, 300);
-		navPane.add(navList, BorderLayout.CENTER);
 	}
 
 	private void createContentPane(Container mainPane) {
@@ -150,9 +116,9 @@ public class DataBindApplet extends JApplet {
 		contentPane.setBorder(new EtchedBorder());
 		mainPane.add(new JScrollPane(this.contentPane), BorderLayout.CENTER);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWidths = new int[] { 0, 0, 0, 0 };
+		gbl_contentPane.columnWidths = new int[] { 0, 0, 0, 64, 0 };
 		gbl_contentPane.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0 };
-		gbl_contentPane.columnWeights = new double[] { 0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gbl_contentPane.columnWeights = new double[] { 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
 		gbl_contentPane.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		contentPane.setLayout(gbl_contentPane);
 
@@ -167,14 +133,14 @@ public class DataBindApplet extends JApplet {
 		txtName = new JTextField();
 		txtName.setText("name");
 		GridBagConstraints gbc_txtName_1 = new GridBagConstraints();
-		gbc_txtName_1.insets = new Insets(0, 0, 5, 0);
+		gbc_txtName_1.insets = new Insets(0, 0, 5, 5);
 		gbc_txtName_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtName_1.gridx = 2;
 		gbc_txtName_1.gridy = 1;
 		contentPane.add(txtName, gbc_txtName_1);
 		txtName.setColumns(10);
 
-		lblBirthday = new JLabel("Birthday");
+		lblBirthday = new JLabel("Age");
 		GridBagConstraints gbc_lblBirthday = new GridBagConstraints();
 		gbc_lblBirthday.anchor = GridBagConstraints.EAST;
 		gbc_lblBirthday.insets = new Insets(0, 0, 5, 5);
@@ -184,12 +150,20 @@ public class DataBindApplet extends JApplet {
 
 		txtBirthday = new JTextField();
 		GridBagConstraints gbc_txtBirthday = new GridBagConstraints();
-		gbc_txtBirthday.insets = new Insets(0, 0, 5, 0);
+		gbc_txtBirthday.insets = new Insets(0, 0, 5, 5);
 		gbc_txtBirthday.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtBirthday.gridx = 2;
 		gbc_txtBirthday.gridy = 2;
 		contentPane.add(txtBirthday, gbc_txtBirthday);
 		txtBirthday.setColumns(10);
+
+		spnAge = new JSpinner();
+		GridBagConstraints gbc_spinner = new GridBagConstraints();
+		gbc_spinner.fill = GridBagConstraints.HORIZONTAL;
+		gbc_spinner.insets = new Insets(0, 0, 5, 5);
+		gbc_spinner.gridx = 3;
+		gbc_spinner.gridy = 2;
+		contentPane.add(spnAge, gbc_spinner);
 
 		lblPhone = new JLabel("Phone");
 		GridBagConstraints gbc_lblPhone = new GridBagConstraints();
@@ -202,7 +176,7 @@ public class DataBindApplet extends JApplet {
 		txtPhone = new JTextField();
 		GridBagConstraints gbc_txtPhone = new GridBagConstraints();
 		gbc_txtPhone.anchor = GridBagConstraints.NORTH;
-		gbc_txtPhone.insets = new Insets(0, 0, 5, 0);
+		gbc_txtPhone.insets = new Insets(0, 0, 5, 5);
 		gbc_txtPhone.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtPhone.gridx = 2;
 		gbc_txtPhone.gridy = 3;
@@ -220,7 +194,7 @@ public class DataBindApplet extends JApplet {
 		txtEmail = new JTextField();
 		GridBagConstraints gbc_txtEmail = new GridBagConstraints();
 		gbc_txtEmail.anchor = GridBagConstraints.NORTH;
-		gbc_txtEmail.insets = new Insets(0, 0, 5, 0);
+		gbc_txtEmail.insets = new Insets(0, 0, 5, 5);
 		gbc_txtEmail.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtEmail.gridx = 2;
 		gbc_txtEmail.gridy = 4;
@@ -236,6 +210,7 @@ public class DataBindApplet extends JApplet {
 
 		txtAddress = new JTextArea();
 		GridBagConstraints gbc_txtAddress = new GridBagConstraints();
+		gbc_txtAddress.insets = new Insets(0, 0, 0, 5);
 		gbc_txtAddress.fill = GridBagConstraints.BOTH;
 		gbc_txtAddress.gridx = 2;
 		gbc_txtAddress.gridy = 5;
@@ -243,11 +218,59 @@ public class DataBindApplet extends JApplet {
 
 	}
 
-	private void createStatePane(Container mainPane) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected void initDataBindings() {
 
-		statePanel = new JPanel();
-		mainPane.add(statePanel, BorderLayout.SOUTH);
-		// btnPane.add(new BasicArrowButton(BasicArrowButton.PREVIOUS));
+		// 监听JTextFiled反馈的时机，针对_ON_ACTION_OR_FOCUS_LOST特性
+		person.addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				System.out.printf("[%s:%s]  %s -> %s \n", evt.getSource(), evt.getPropertyName(), evt.getOldValue(),
+						evt.getNewValue());
+			}
+		});
+
+		BindingGroup bindingGroup = new BindingGroup();
+
+		//绑定 txtName 和 person
+		Binding bindingName = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, //
+				person, BeanProperty.create("name"), //
+				txtName, BeanProperty.create("text_ON_ACTION_OR_FOCUS_LOST") //
+				);
+
+		bindingGroup.addBinding(bindingName);
+
+		//绑定 spnAge 和 txtBirthday
+		Binding bindingAge = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, //
+				spnAge, BeanProperty.create("value"), //
+				txtBirthday, BeanProperty.create("text_ON_FOCUS_LOST") //
+				);
+
+		// 转换 spnAge 和 txtBirthday 的值类型
+		bindingAge.setConverter(new Converter<Integer, String>() {
+
+			@Override
+			public String convertForward(Integer value) {
+				return value.toString();
+			}
+
+			@Override
+			public Integer convertReverse(String value) {
+				return Integer.valueOf(value);
+			}
+		});
+
+		bindingGroup.addBinding(bindingAge);
+
+		// note that the converter and validators must be installed before calling bind()
+		//		binding.setConverter(new PositiveIntegerConverter());
+		//		binding.setValidator(new YearValidator());
+
+		// this allows us to get sync failure notifications, so they can be displayed
+		//		binding.addBindingListener(this);
+
+		bindingGroup.bind();
 	}
 
 	/**
@@ -257,25 +280,17 @@ public class DataBindApplet extends JApplet {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			// impossible
 		}
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					DataBindApplet applet = new DataBindApplet();
-					Console.run(applet, 800, 600);
+					Console.run(new DataBindApplet(), 800, 600);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
-	}
-
-	protected void initDataBindings() {
-		BeanProperty<Person, String> personBeanProperty = BeanProperty.create("name");
-		BeanProperty<JTextField, String> jTextFieldBeanProperty = BeanProperty.create("text_ON_ACTION_OR_FOCUS_LOST");
-		AutoBinding<Person, String, JTextField, String> autoBinding = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, thisPerson, personBeanProperty, txtName, jTextFieldBeanProperty);
-		autoBinding.bind();
 	}
 }
