@@ -26,8 +26,9 @@ class AgeVetoableChangeListener implements VetoableChangeListener {
 	public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
 		if ("age".equals(evt.getPropertyName())) {
 			Integer age = (Integer) evt.getNewValue();
-			if (age == null || age < 0 || age > 150)
+			if (age == null || age < 0 || age > 150) {
 				throw new PropertyVetoException("年龄必须在[0-150]内.", evt);
+			}
 		}
 	}
 }
@@ -36,12 +37,7 @@ class PersonChangeListener implements PropertyChangeListener {
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		System.out.printf("Change [%s] from '%s' to '%s' \n",
-
-		evt.getPropertyName(),
-
-		evt.getOldValue(),
-
-		evt.getNewValue());
+		System.out.printf("Change [%s] from '%s' to '%s' \n", //
+				evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
 	}
 }
