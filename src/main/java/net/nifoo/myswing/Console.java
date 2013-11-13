@@ -36,7 +36,9 @@ public class Console {
 		JFrame frame = new JFrame();
 		frame.setTitle(parseTitle(panel));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().add(panel);
+		
+		panel.setOpaque(true);
+		frame.setContentPane(panel);
 		//frame.setBounds(100, 100, 450, 300);
 		frame.setSize(width, height);
 

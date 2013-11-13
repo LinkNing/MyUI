@@ -54,6 +54,7 @@ dependencies {
 	compile group: 'commons-io', name: 'commons-io', version: '2.+'
 	compile group: 'commons-beanutils', name: 'commons-beanutils',version: '1.+'
 	compile group: 'commons-collections', name: 'commons-collections', version: '3.+'
+	compile 'commons-httpclient:commons-httpclient:3.+'
 	compile group: 'com.google.guava', name: 'guava', version: '13.+'
 	compile 'javax.validation:validation-api:1.1.0.Final'
 	compile 'org.apache.bval:bval-core:0.5'
